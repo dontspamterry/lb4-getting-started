@@ -64,3 +64,5 @@ api-docs/
 dist/
 dist6/
 
+# IDEA
+.idea/
