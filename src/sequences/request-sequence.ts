@@ -30,7 +30,7 @@ export class MySequence implements SequenceHandler {
         @inject(SequenceActions.SEND) protected send: Send,
         @inject(SequenceActions.REJECT) protected reject: Reject,
         @inject(AuthenticationBindings.AUTH_ACTION)
-        protected authenticateRequest: AuthenticateFn,
+        protected authenticateRequest: AuthenticateFn
     ) {}
 
     async handle(req: ParsedRequest, res: ServerResponse) {
@@ -38,14 +38,21 @@ export class MySequence implements SequenceHandler {
             // Produce route elemwent
             const route = this.findRoute(req);
 
-            // This is the important line added to the default sequence implementation
-            await this.authenticateRequest(req);
+            // TODO: Is there a better way to do this? Not sure yet how to get RestServer to map different routes
+            // to different sequence handlers. RestServer, presently, does not accept multiple SequenceHandlers
+            let regex = new RegExp("whoami");
+            if (regex.test(req.path)) {
+                console.log("Request " + req.path + " requires authentication");
+                // This is the important line added to the default sequence implementation
+                await this.authenticateRequest(req);
+            }
 
             // Use route element to produce args element
             const args = await this.parseParams(req, route);
             const result = await this.invoke(route, args);
             this.send(res, result);
         } catch (err) {
+            console.log("error type = " + typeof(err) + ": " + err.constructor.name);
             this.reject(res, req, err);
         }
     }
