@@ -30,7 +30,7 @@ export class AppError {
             let httpError = <createHttpError.HttpError>error;
             return new AppError(httpError.statusCode, "HTTP", httpError.message, now);
         } else {
-            return new AppError(-1, "UNKNOWN", error.message, now);
+            return new AppError(500, "UNKNOWN", error.message, now);
         }
     }
 }

@@ -18,7 +18,9 @@ export class CustomRejectProvider extends RejectProvider {
             const err = <HttpError>error;
             const statusCode = err.statusCode || err.status || 500;
             //writeErrorToResponse(response, err);
+;
             response.setHeader('Content-Type', 'application/json');
+            response.statusCode = statusCode;
             response.write(JSON.stringify(appError));
             response.end();
             this.logError(error, statusCode, request);
