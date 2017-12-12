@@ -18,12 +18,12 @@ const exceptions: Error[] = [
 export class HelloController {
 
     @get('hello')
-    @param.query.boolean('crapOut')
-    hello(crapOut: boolean = false): string {
-        let tempBool: boolean = new Boolean(crapOut).valueOf();
+    @param.query.boolean('throwError')
+    hello(throwError: boolean = false): string {
+        let tempBool: boolean = new Boolean(throwError).valueOf();
 
         if (tempBool === true) {
-            throw new createHttpError.BadRequest('/hello crapOut error');
+            throw new createHttpError.BadRequest('/hello throw fake HTTP error');
         }
 
         return 'Hello World';
