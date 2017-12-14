@@ -9,5 +9,18 @@
     "node_modules/**",
     "packages/*/node_modules/**",
     "**/*.d.ts"
-  ]
+  ],
+  "compilerOptions": {
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "noImplicitAny": false,
+    "strictNullChecks": false,
+
+    "lib": ["es2017", "dom"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es6",
+    "sourceMap": true,
+    "declaration": true
+  }
 }

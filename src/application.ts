@@ -21,6 +21,14 @@ import {MySequence} from './sequences/request-sequence';
 import {CustomRejectProvider} from "./providers/custom-reject-provider";
 import {Constructor} from "@loopback/context";
 
+import {DbProvisioner} from "./repositories/db-provisioner";
+import {DynamoDbProvisioner} from "./repositories/dynamodb/dynamodb-provisioner";
+import to from './util/to';
+
+import {RepositoryMixin} from '@loopback/repository';
+import {UserStateController} from "./controllers/userState.controller";
+import {UserStateRepositoryDynamoDao} from "./repositories/dynamodb/userState-repository-dynamo-dao";
+
 
 class CustomRestComponent extends RestComponent {
   controllers = [PingController, HelloController, SecureController];
@@ -50,7 +58,6 @@ class CustomRestComponent extends RestComponent {
         RestServer,
     };
 }
-
 
 export class StarterApplication extends Application {
   constructor(options?: ApplicationConfig) {
@@ -82,11 +89,25 @@ export class StarterApplication extends Application {
     this.controller(PingController);
     this.controller(HelloController);
     this.controller(SecureController);
+    this.controller(UserStateController);
   }
 
-  async start() {
-    const server = await this.getServer(RestServer);
-    server.bind(AuthenticationBindings.STRATEGY).toProvider(MyAuthStrategyProvider);
-    await super.start();
-  }
+    async start() {
+        const server = await this.getServer(RestServer);
+        server.bind(AuthenticationBindings.STRATEGY).toProvider(MyAuthStrategyProvider);
+        server.bind("ccp.userState.repository").toClass(UserStateRepositoryDynamoDao);
+
+        /*
+        // TODO: need to configure this provisioner via config
+        let dbProvisioner: DbProvisioner = new DynamoDbProvisioner();
+        let [err, result] = await to(dbProvisioner.provision());
+        if (err) {
+            throw new Error("Unable to provision DB tables");
+        } else {
+            console.log(`DB provisioning status = ${result}`);
+        }
+        */
+
+        await super.start();
+    }
 }
