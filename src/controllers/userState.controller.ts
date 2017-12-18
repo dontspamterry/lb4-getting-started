@@ -7,7 +7,7 @@ import {get, param, post} from "@loopback/rest";
 import {UserStateRepositoryDao} from "../repositories/userState-repository-dao";
 
 export class UserStateController {
-    constructor(@inject("ccp.userState.repository") private userStateRepository: UserStateRepositoryDao) {
+    constructor(@inject("ccp.repository.userState") private userStateRepository: UserStateRepositoryDao) {
     }
 
     @get('/userState/{token}')

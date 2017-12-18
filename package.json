@@ -43,15 +43,17 @@
     "@loopback/authentication": "^4.0.0-alpha.20",
     "@loopback/context": "^4.0.0-alpha.22",
     "@loopback/core": "^4.0.0-alpha.24",
-    "@loopback/rest": "^4.0.0-alpha.13",
     "@loopback/repository": "^4.0.0-alpha.18",
+    "@loopback/rest": "^4.0.0-alpha.13",
     "@types/passport": "^0.4.1",
     "@types/passport-http": "^0.3.3",
-    "aws-sdk": ">=2.169.0",
-    "passport": ">=0.4.0",
-    "passport-http": "^0.3.0",
+    "aws-sdk": "^2.170.0",
+    "cconfig": "^1.2.4",
     "glob": "^7.1.2",
-    "lodash.partition": "^4.6.0"
+    "lodash.partition": "^4.6.0",
+    "passport": "^0.4.0",
+    "passport-http": "^0.3.0",
+    "passport-http-bearer": "^1.0.1"
   },
   "devDependencies": {
     "@loopback/build": "^4.0.0-alpha.7",

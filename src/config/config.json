@@ -1,0 +1,12 @@
+{
+    "development": {
+        "dbType": "dynamodb",
+        "dbConfig": {
+            "endpointUrl": "http://localhost:8000",
+            "region": "us-west-2"
+        }
+    },
+    "test": {
+
+    }
+}

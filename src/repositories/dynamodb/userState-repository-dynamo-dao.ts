@@ -1,5 +1,5 @@
 
-// TODO: Quick and dirty. Need to investigate whether we can rely on the legacy juggler (there is DynamoDB adapter at
+// TODO: Quick and dirty. Need evaluate investigate whether we can rely on the legacy juggler (there is DynamoDB adapter at
 // https://github.com/tmpaul/jugglingdb-dynamodb, but the last commit was way back in Aug 1, 2014
 
 import {RepositoryDao} from '../repository-dao';
@@ -9,28 +9,20 @@ import {
     AttributeValue, GetItemInput, GetItemOutput, PutItemInput, PutItemOutput, StringAttributeValue,
     TableName
 } from "aws-sdk/clients/dynamodb";
-import to from "../../util/to";
 import {UserStateRepositoryDao} from "../userState-repository-dao";
 import {UserStateDynamoDto} from "./userState-dynamo-dto";
+import {inject} from "@loopback/context";
+import {CcpRepositoryBindings} from "../repository-bindings";
+import evaluate from "../../util/evaluate";
 
 export class UserStateRepositoryDynamoDao implements UserStateRepositoryDao {
-    private readonly tableName = "SelfServiceUserState";
-    private dynamoDb: AWS.DynamoDB;
+    private readonly tableName = "ccp_self_service_auth_dev";
 
-    constructor() {
-        this.dynamoDb = new AWS.DynamoDB({
-            apiVersion: '2012-08-10',
-            region: 'us-west-2',
-            credentials: {
-                accessKeyId: "ABC",
-                secretAccessKey: "DEF"
-            },
-        });
-        this.dynamoDb.endpoint = new AWS.Endpoint("http://localhost:8000");
-    }
+    constructor(@inject(CcpRepositoryBindings.CLIENT) private dynamoDb: AWS.DynamoDB) {}
 
     async get(token: string): Promise<UserState | undefined> {
         let userState: UserState | undefined = undefined;
+        // TODO: Can we read that token field as a static string in the UserStateDynamoDto?
         let getItemInput: GetItemInput = {
             Key: {
                 "token": {
@@ -40,13 +32,13 @@ export class UserStateRepositoryDynamoDao implements UserStateRepositoryDao {
             TableName: this.tableName
         }
 
-        let [err, data] = await to(this.dynamoDb.getItem(getItemInput).promise());
+        let [err, data] = await evaluate(this.dynamoDb.getItem(getItemInput).promise());
         if (err) {
             console.log("Error retrieving: " + err);
             return undefined;
         } else {
             console.log(typeof(data));
-            userState = UserStateDynamoDto.mapToModel(<GetItemOutput>data);
+            userState = UserStateDynamoDto.mapToModel((<GetItemOutput>data).Item);
             return userState;
         }
     }
@@ -64,10 +56,10 @@ export class UserStateRepositoryDynamoDao implements UserStateRepositoryDao {
             ReturnConsumedCapacity: "TOTAL",
             TableName: this.tableName
         }
-        let [err, data] = await to(this.dynamoDb.putItem(putItemInput).promise());
+        let [err, data] = await evaluate(this.dynamoDb.putItem(putItemInput).promise());
         if (err) {
             console.log("Error saving: " + err);
-            throw new Error("Unable to save the user state for id=" + userState.ntid);
+            throw new Error("Unable evaluate save the user state for id=" + userState.ntid);
         } else {
             return userState;
         }

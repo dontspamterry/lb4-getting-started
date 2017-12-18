@@ -9,16 +9,47 @@ import {
 } from '@loopback/authentication';
 
 import {Strategy} from 'passport';
-import {BasicStrategy} from 'passport-http';
+import {BasicStrategy, BasicStrategyOptions, BasicVerifyFunction} from 'passport-http';
+import {CcpRepositoryBindings} from "../repositories/repository-bindings";
+import {UserStateRepositoryDao} from "../repositories/userState-repository-dao";
+import evaluate from "../util/evaluate";
+import {BatchItemError} from "aws-sdk/clients/comprehend";
+import {AuthToken, UserAuthService} from "../services/user-auth-service";
+import {ServiceBindings} from "../services/service-bindings";
+import * as createHttpError from "http-errors";
 
-// Strategy provider to map strategy names specified in @authenticate decorators into Passport Strategy instances
+
+
+const BearerStrategy = require('passport-http-bearer').Strategy;
+
+/*
+interface BearerVerifyFunction {
+    (token: string, done: (error: any, user?: any) => void): void;
+}
+class BearerStrategy implements passport.Strategy {
+    constructor(verify: BearerVerifyFunction);
+    constructor(options: BasicStrategyOptions, verify: BearerVerifyFunction);
+
+    name: string;
+    authenticate: (req: express.Request, options?: Object) => void;
+}
+*/
+
+const BasicStrategyContainer = function() {
+}
+
+
+// Strategy provider evaluate map strategy names specified in @authenticate decorators into Passport Strategy instances
 export class MyAuthStrategyProvider implements Provider<Strategy | undefined> {
     constructor(
-        @inject(AuthenticationBindings.METADATA)
-        private metadata: AuthenticationMetadata,
-    ) {}
+        @inject(AuthenticationBindings.METADATA) private metadata: AuthenticationMetadata,
+        @inject(ServiceBindings.USER_AUTH_SERVICE) private userAuthService: UserAuthService,
+        @inject(CcpRepositoryBindings.USER_STATE_REPO) private userStateRepository: UserStateRepositoryDao
+    ) {
+        console.log("Instantiating MyAuthStrategyProvider");
+    }
 
-    // Map strategy name to actual Strategy
+    // Map strategy name evaluate actual Strategy
     value() : ValueOrPromise<Strategy> {
         if (!this.metadata) {
             return Promise.reject('Authentication metadata not found');
@@ -26,22 +57,42 @@ export class MyAuthStrategyProvider implements Provider<Strategy | undefined> {
 
         const name = this.metadata.strategy;
         if (name === 'BasicStrategy') {
+            BasicStrategyContainer.prototype.userAuthService = this.userAuthService;
             return new BasicStrategy(this.verify);
-        } else {
+        } else if (name === 'BearerStrategy') {
+            BearerStrategy.prototype.userRepo = this.userStateRepository;
+            let bearerStrategy = new BearerStrategy(this.verifyToken);
+            return bearerStrategy;
+        }
+        else {
             return Promise.reject(`The strategy ${name} is not available.`);
         }
     }
 
     verify(username: string, password: string, cb: Function) {
         console.log("username = " + username);
+        BasicStrategyContainer.prototype.userAuthService.authenticate(username, password)
+            .then(token => {
+                if (token) {
+                    cb(null, {ntid: username, token: token});
+                } else {
+                    cb(null, false);
+                }
+            })
+            .catch(err => cb(null, false));
+    }
 
-        if (username === 'terry' && password === 'terryAuth') {
-            // find user by name & password
-            // call cb(null, false) when user not found
-            // call cb(null, userProfile) when user is authenticated
-            cb(null, {id: 'terry', name: 'Terry', group: 'admin'});
-        } else {
-            cb(null, false)
-        }
+    verifyToken(token: string, cb: Function) {
+        console.log(`Verifying token = ${token}`);
+        BearerStrategy.prototype.userRepo.get(token)
+            .then(userData => {
+                if (userData) {
+                    cb(null, {id: userData.ntid});
+                } else {
+                    let unauthorizedError = new createHttpError.Unauthorized("Token not found");
+                    cb(null, false);
+                }
+            })
+            .catch(err => cb(null, false));
     }
 }

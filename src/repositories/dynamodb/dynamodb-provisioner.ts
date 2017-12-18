@@ -1,8 +1,8 @@
 import {DbProvisioner} from "../db-provisioner";
 import AWS = require('aws-sdk');
-import to from "../../util/to";
 import {partition} from "lodash";
 import {CreateTableInput} from "aws-sdk/clients/dynamodb";
+import evaluate from "../../util/evaluate";
 
 
 export class DynamoDbProvisioner implements DbProvisioner {
@@ -17,12 +17,12 @@ export class DynamoDbProvisioner implements DbProvisioner {
         let schemaFiles: string[] = fs.readdirSync(this.resourcePath);
         return schemaFiles;
 
-        // TODO: use glob to avoid filtering above??
+        // TODO: use glob evaluate avoid filtering above??
         /*
         const glob = require('glob');
         glob('./src/repositories/dynamodb/*.json', function()
         if (err) {
-            console.log("Unable to list files. Error: " + err);
+            console.log("Unable evaluate list files. Error: " + err);
             return undefined
         } else {
             data.forEach((f: string) => {
@@ -61,7 +61,7 @@ export class DynamoDbProvisioner implements DbProvisioner {
 //            ExclusiveStartTableName: tableName
         }
 
-        let [listTableError, listTableResponse] = await to(dynamoDb.listTables(listTableParams).promise());
+        let [listTableError, listTableResponse] = await evaluate(dynamoDb.listTables(listTableParams).promise());
         if (listTableError) {
             console.log("error: " + listTableError);
         } else {
@@ -75,7 +75,7 @@ export class DynamoDbProvisioner implements DbProvisioner {
                     console.log(`* * * Table ${s.TableName} already exists`);
                 } else {
                     console.log(`* * * Create table ${s.TableName}`);
-                    let [createTableErr, createTableResponse] = await to(dynamoDb.createTable(s).promise());
+                    let [createTableErr, createTableResponse] = await evaluate(dynamoDb.createTable(s).promise());
                     if (createTableErr) {
                         console.log(`Error creating table ${s.TableName}`);
                     } else {

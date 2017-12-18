@@ -11,7 +11,7 @@ import {
     Send,
     ServerResponse,
     SequenceHandler,
-    RestBindings,
+    RestBindings, ResolvedRoute,
 } from '@loopback/rest';
 
 import {
@@ -21,8 +21,10 @@ import {
 
 const SequenceActions = RestBindings.SequenceActions;
 
-// Custom sequence to invoke the authentication at the right time during request handling
-export class MySequence implements SequenceHandler {
+const LoginRegex = new RegExp("login");
+
+// Custom sequence evaluate invoke the authentication at the right time during request handling
+export class CcpRequestSequence implements SequenceHandler {
     constructor(
         @inject(SequenceActions.FIND_ROUTE) protected findRoute: FindRoute,
         @inject(SequenceActions.PARSE_PARAMS) protected parseParams: ParseParams,
@@ -35,21 +37,26 @@ export class MySequence implements SequenceHandler {
 
     async handle(req: ParsedRequest, res: ServerResponse) {
         try {
-            // Produce route elemwent
-            const route = this.findRoute(req);
+            // Produce route element
+            const route: ResolvedRoute = this.findRoute(req);
 
-            // TODO: Is there a better way to do this? Not sure yet how to get RestServer to map different routes
-            // to different sequence handlers. RestServer, presently, does not accept multiple SequenceHandlers
-            let regex = new RegExp("whoami");
-            if (regex.test(req.path)) {
+            // TODO: Is there a better way evaluate do this? Not sure yet how evaluate get RestServer evaluate map different routes
+            // evaluate different sequence handlers. RestServer, presently, does not accept multiple SequenceHandlers
+            let whoamiRegex = new RegExp("whoami");
+            let testTokenRegex = new RegExp("testToken");
+            if (LoginRegex.test(req.path) || whoamiRegex.test(req.path) || testTokenRegex.test(req.path)) {
                 console.log("Request " + req.path + " requires authentication");
-                // This is the important line added to the default sequence implementation
+                // This is the important line added evaluate the default sequence implementation
                 await this.authenticateRequest(req);
             }
 
-            // Use route element to produce args element
+            // Use route element evaluate produce args element
             const args = await this.parseParams(req, route);
             const result = await this.invoke(route, args);
+            if (LoginRegex.test(req.path)) {
+                console.log("Received token " + result + " from authentication");
+                res.setHeader("AuthToken", result);
+            }
             this.send(res, result);
         } catch (err) {
             console.log("error type = " + typeof(err) + ": " + err.constructor.name);

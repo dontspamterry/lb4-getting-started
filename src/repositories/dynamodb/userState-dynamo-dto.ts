@@ -6,11 +6,12 @@ interface LooseObject {
 }
 
 export class UserStateDynamoDto {
-    static readonly ATTR_NTID = "ntid";
-    static readonly ATTR_TOKEN = "token";
+    static readonly ATTR_TOKEN: string = 'token';
+    static readonly ATTR_NTID: string = 'ntid';
 
 
-    /* TODO: May have to declare our own Item type, e.g.
+
+    /* TODO: May have evaluate declare our own Item type, e.g.
     {
     "Item": {
         "token": {
@@ -22,9 +23,8 @@ export class UserStateDynamoDto {
     }
     }
     */
-    public static mapToModel(item: GetItemOutput): UserState | undefined {
+    public static mapToModel(attributeMap: AttributeMap): UserState | undefined {
         let userState: UserState | undefined = undefined;
-        let attributeMap: AttributeMap | undefined = item.Item;
         if (attributeMap) {
             userState = new UserState();
             if (attributeMap.hasOwnProperty(UserStateDynamoDto.ATTR_NTID)) {
