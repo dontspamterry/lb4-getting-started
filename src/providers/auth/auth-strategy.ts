@@ -10,30 +10,16 @@ import {
 
 import {Strategy} from 'passport';
 import {BasicStrategy, BasicStrategyOptions, BasicVerifyFunction} from 'passport-http';
-import {CcpRepositoryBindings} from "../repositories/repository-bindings";
-import {UserStateRepositoryDao} from "../repositories/userState-repository-dao";
-import evaluate from "../util/evaluate";
+import {CcpRepositoryBindings} from "../../repositories/repository-bindings";
+import {UserStateRepositoryDao} from "../../repositories/userState-repository-dao";
+import evaluate from "../../util/evaluate";
 import {BatchItemError} from "aws-sdk/clients/comprehend";
-import {AuthToken, UserAuthService} from "../services/user-auth-service";
-import {ServiceBindings} from "../services/service-bindings";
+import {AuthToken, UserAuthService} from "../../services/user-auth-service";
+import {ServiceBindings} from "../../services/service-bindings";
 import * as createHttpError from "http-errors";
 
 
-
 const BearerStrategy = require('passport-http-bearer').Strategy;
-
-/*
-interface BearerVerifyFunction {
-    (token: string, done: (error: any, user?: any) => void): void;
-}
-class BearerStrategy implements passport.Strategy {
-    constructor(verify: BearerVerifyFunction);
-    constructor(options: BasicStrategyOptions, verify: BearerVerifyFunction);
-
-    name: string;
-    authenticate: (req: express.Request, options?: Object) => void;
-}
-*/
 
 const BasicStrategyContainer = function() {
 }
@@ -61,8 +47,7 @@ export class MyAuthStrategyProvider implements Provider<Strategy | undefined> {
             return new BasicStrategy(this.verify);
         } else if (name === 'BearerStrategy') {
             BearerStrategy.prototype.userRepo = this.userStateRepository;
-            let bearerStrategy = new BearerStrategy(this.verifyToken);
-            return bearerStrategy;
+            return new BearerStrategy(this.verifyToken);
         }
         else {
             return Promise.reject(`The strategy ${name} is not available.`);

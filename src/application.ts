@@ -16,7 +16,7 @@ import {HelloController} from './controllers/hello.controller';
 import {SecureController} from './controllers/secure.controller';
 
 import {AuthenticationComponent, AuthenticationBindings} from '@loopback/authentication';
-import {MyAuthStrategyProvider} from './providers/auth-strategy';
+import {MyAuthStrategyProvider} from './providers/auth/auth-strategy';
 import {CcpRequestSequence} from './sequences/ccp-request-sequence';
 import {CustomRejectProvider} from "./providers/custom-reject-provider";
 import {Constructor, inject} from "@loopback/context";
