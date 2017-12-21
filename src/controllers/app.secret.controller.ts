@@ -1,11 +1,11 @@
 import {inject} from "@loopback/context";
 import {CcpRepositoryBindings} from "../repositories/repository-bindings";
-import {AppSecretRepositoryDao} from "../repositories/app.secret.repository.dao";
+import {AppSecretDao} from "../repositories/app.secret.dao";
 import {get, param, post} from "@loopback/rest";
 import {AppSecret} from "../models/app.secret";
 
 export class AppSecretController {
-    constructor(@inject(CcpRepositoryBindings.APP_SECRET_REPO) private appSecretDao: AppSecretRepositoryDao) {
+    constructor(@inject(CcpRepositoryBindings.APP_SECRET_REPO) private appSecretDao: AppSecretDao) {
     }
 
     @get('/appSecret/{serviceId}')

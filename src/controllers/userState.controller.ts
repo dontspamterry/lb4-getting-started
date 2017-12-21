@@ -2,12 +2,12 @@
 
 import {inject} from "@loopback/context";
 import {UserState} from "../models/userState";
-import {RepositoryDao} from "../repositories/repository-dao";
+import {CcpDao} from "../repositories/ccp-dao";
 import {get, param, post} from "@loopback/rest";
-import {UserStateRepositoryDao} from "../repositories/userState-repository-dao";
+import {UserStateDao} from "../repositories/userState-dao";
 
 export class UserStateController {
-    constructor(@inject("ccp.repository.userState") private userStateRepository: UserStateRepositoryDao) {
+    constructor(@inject("ccp.repository.userState") private userStateRepository: UserStateDao) {
     }
 
     @get('/userState/{token}')

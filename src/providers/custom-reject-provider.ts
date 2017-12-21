@@ -2,7 +2,6 @@ import {LogError, Reject, RejectProvider, RestBindings} from "@loopback/rest";
 import {inject} from "@loopback/context";
 import {ServerRequest, ServerResponse} from "http";
 import {HttpError} from "http-errors";
-import {writeErrorToResponse} from "@loopback/rest/dist6/src/writer";
 import {AppError} from "../errors/app-error";
 
 

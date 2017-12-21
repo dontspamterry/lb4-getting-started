@@ -1,5 +1,5 @@
 import {CcpRepositoryBindings} from "../repositories/repository-bindings";
-import {UserStateRepositoryDao} from "../repositories/userState-repository-dao";
+import {UserStateDao} from "../repositories/userState-dao";
 import {inject} from "@loopback/context";
 import {UserState} from "../models/userState";
 import evaluate from "../util/evaluate";
@@ -14,7 +14,7 @@ export class UserAuthService {
         ['poobah']: ['poobahdabest', 'gs4eva']
     };
 
-    constructor(@inject(CcpRepositoryBindings.USER_STATE_REPO) private userStateRepository: UserStateRepositoryDao) {
+    constructor(@inject(CcpRepositoryBindings.USER_STATE_REPO) private userStateRepository: UserStateDao) {
     }
 
     async authenticate(userId: string, password: string): Promise<AuthToken | undefined> {

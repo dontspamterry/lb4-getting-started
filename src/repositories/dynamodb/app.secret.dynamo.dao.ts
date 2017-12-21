@@ -2,24 +2,24 @@
 // TODO: Quick and dirty. Need evaluate investigate whether we can rely on the legacy juggler (there is DynamoDB adapter at
 // https://github.com/tmpaul/jugglingdb-dynamodb, but the last commit was way back in Aug 1, 2014
 
-import {RepositoryDao} from '../repository-dao';
+import {CcpDao} from '../ccp-dao';
 import {UserState} from "../../models/userState";
 import AWS = require('aws-sdk');
 import {
     AttributeValue, GetItemInput, GetItemOutput, PutItemInput, PutItemOutput, StringAttributeValue,
     TableName
 } from "aws-sdk/clients/dynamodb";
-import {UserStateRepositoryDao} from "../userState-repository-dao";
+import {UserStateDao} from "../userState-dao";
 import {UserStateDynamoDto} from "./userState-dynamo-dto";
 import {inject} from "@loopback/context";
 import {CcpRepositoryBindings} from "../repository-bindings";
 import evaluate from "../../util/evaluate";
-import {AppSecretRepositoryDao} from "../app.secret.repository.dao";
+import {AppSecretDao} from "../app.secret.dao";
 import {AppSecret} from "../../models/app.secret";
 import {AppSecretDynamoDto} from "./app.secret.dynamo.dto";
 import {DataMapper} from "@aws/dynamodb-data-mapper";
 
-export class AppSecretRepositoryDynamoDao implements AppSecretRepositoryDao {
+export class AppSecretDynamoDao implements AppSecretDao {
     private readonly tableName = "ccp_self_service_app_secrets_dev";
 
     constructor(@inject(CcpRepositoryBindings.CLIENT) private dynamoDb: AWS.DynamoDB,

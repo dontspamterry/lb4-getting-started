@@ -27,7 +27,7 @@ import to from './util/evaluate';
 
 import {RepositoryMixin} from '@loopback/repository';
 import {UserStateController} from "./controllers/userState.controller";
-import {UserStateRepositoryDynamoDao} from "./repositories/dynamodb/userState-repository-dynamo-dao";
+import {UserStateDynamoDao} from "./repositories/dynamodb/userState-dynamo-dao";
 import {UserAuthService} from "./services/user-auth-service";
 
 import {CcpRepositoryBindings} from "./repositories/repository-bindings";
@@ -37,7 +37,7 @@ import AWS = require('aws-sdk');
 import {LoginController} from "./controllers/login.controller";
 import {DataMapper} from "@aws/dynamodb-data-mapper";
 import {AppSecretController} from "./controllers/app.secret.controller";
-import {AppSecretRepositoryDynamoDao} from "./repositories/dynamodb/app.secret.repository.dynamo.dao";
+import {AppSecretDynamoDao} from "./repositories/dynamodb/app.secret.dynamo.dao";
 
 //const DbConfig = require('cconfig')('./config/config.json');
 
@@ -112,10 +112,10 @@ console.log("dbType = " + DbConfig.dbType);
         server.bind(CcpRepositoryBindings.CLIENT).to(dynamoDb);
         server.bind(CcpRepositoryBindings.DATA_MAPPER).to(dataMapper);
 
-        server.bind(CcpRepositoryBindings.USER_STATE_REPO).toClass(UserStateRepositoryDynamoDao);
+        server.bind(CcpRepositoryBindings.USER_STATE_REPO).toClass(UserStateDynamoDao);
         server.bind(ServiceBindings.USER_AUTH_SERVICE).toClass(UserAuthService);
 
-        server.bind(CcpRepositoryBindings.APP_SECRET_REPO).toClass(AppSecretRepositoryDynamoDao);
+        server.bind(CcpRepositoryBindings.APP_SECRET_REPO).toClass(AppSecretDynamoDao);
 
 
         // Ugh. Don't know if it's true, but you gotta be aware of your binding dependencies. Not sure if loopback

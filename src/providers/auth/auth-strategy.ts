@@ -11,7 +11,7 @@ import {
 import {Strategy} from 'passport';
 import {BasicStrategy, BasicStrategyOptions, BasicVerifyFunction} from 'passport-http';
 import {CcpRepositoryBindings} from "../../repositories/repository-bindings";
-import {UserStateRepositoryDao} from "../../repositories/userState-repository-dao";
+import {UserStateDao} from "../../repositories/userState-dao";
 import evaluate from "../../util/evaluate";
 import {BatchItemError} from "aws-sdk/clients/comprehend";
 import {AuthToken, UserAuthService} from "../../services/user-auth-service";
@@ -30,7 +30,7 @@ export class MyAuthStrategyProvider implements Provider<Strategy | undefined> {
     constructor(
         @inject(AuthenticationBindings.METADATA) private metadata: AuthenticationMetadata,
         @inject(ServiceBindings.USER_AUTH_SERVICE) private userAuthService: UserAuthService,
-        @inject(CcpRepositoryBindings.USER_STATE_REPO) private userStateRepository: UserStateRepositoryDao
+        @inject(CcpRepositoryBindings.USER_STATE_REPO) private userStateRepository: UserStateDao
     ) {
         console.log("Instantiating MyAuthStrategyProvider");
     }
