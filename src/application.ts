@@ -35,6 +35,9 @@ import {ServiceBindings} from "./services/service-bindings";
 
 import AWS = require('aws-sdk');
 import {LoginController} from "./controllers/login.controller";
+import {DataMapper} from "@aws/dynamodb-data-mapper";
+import {AppSecretController} from "./controllers/app.secret.controller";
+import {AppSecretRepositoryDynamoDao} from "./repositories/dynamodb/app.secret.repository.dynamo.dao";
 
 //const DbConfig = require('cconfig')('./config/config.json');
 
@@ -82,6 +85,7 @@ export class StarterApplication extends Application {
     this.controller(SecureController);
     this.controller(UserStateController);
     this.controller(LoginController);
+    this.controller(AppSecretController);
   }
 
     async start() {
@@ -102,10 +106,16 @@ console.log("dbType = " + DbConfig.dbType);
             },
         });
         dynamoDb.endpoint = new AWS.Endpoint("http://localhost:8000");
+
+        let dataMapper: DataMapper = new DataMapper({client: dynamoDb});
+
         server.bind(CcpRepositoryBindings.CLIENT).to(dynamoDb);
+        server.bind(CcpRepositoryBindings.DATA_MAPPER).to(dataMapper);
 
         server.bind(CcpRepositoryBindings.USER_STATE_REPO).toClass(UserStateRepositoryDynamoDao);
         server.bind(ServiceBindings.USER_AUTH_SERVICE).toClass(UserAuthService);
+
+        server.bind(CcpRepositoryBindings.APP_SECRET_REPO).toClass(AppSecretRepositoryDynamoDao);
 
 
         // Ugh. Don't know if it's true, but you gotta be aware of your binding dependencies. Not sure if loopback

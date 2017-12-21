@@ -1,10 +1,19 @@
 import {UserState} from "../../models/userState";
 import {AttributeMap, AttributeValue, GetItemOutput} from "aws-sdk/clients/dynamodb";
 import {AppSecret} from "../../models/app.secret";
+import {attribute, hashKey, table} from "@aws/dynamodb-data-mapper-annotations";
 
+@table('ccp_self_service_app_secrets_dev')
 export class AppSecretDynamoDto {
     static readonly ATTR_SERVICE_ID: string = 'serviceId';
     static readonly ATTR_SECRET: string = 'secret';
+
+    @hashKey()
+    serviceId: string;
+
+    @attribute()
+    secret: string;
+
 
     public static mapToModel(attributeMap: AttributeMap): AppSecret | undefined {
         let appSecret: AppSecret | undefined = undefined;
