@@ -64,6 +64,7 @@
     "@loopback/testlab": "^4.0.0-alpha.16",
     "@types/mocha": "^2.2.43",
     "async-file": "^2.0.2",
+    "dynamodb-local": "0.0.18",
     "mocha": "^4.0.1"
   }
 }

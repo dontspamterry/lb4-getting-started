@@ -26,10 +26,8 @@ export class AppSecretDynamoDao implements AppSecretDao {
                 @inject(CcpRepositoryBindings.DATA_MAPPER) private dataMapper: DataMapper) {}
 
     async get(serviceId: string): Promise<AppSecret | undefined> {
-        let queryDto = new AppSecretDynamoDto();
-        queryDto.serviceId = serviceId;
-
-        let [err, data] = await evaluate(this.dataMapper.get(queryDto));
+        let queryDto = new AppSecretDynamoDto().withServiceId(serviceId);
+        let [err, data] = await evaluate(this.dataMapper.get<AppSecretDynamoDto>(queryDto));
         if (err) {
             console.log("Error retrieving: " + err);
             return undefined;
@@ -43,15 +41,13 @@ export class AppSecretDynamoDao implements AppSecretDao {
     }
 
     async save(appSecret: AppSecret): Promise<AppSecret> {
-        let dtoToSave = new AppSecretDynamoDto();
-        dtoToSave.serviceId = appSecret.serviceId;
-        dtoToSave.secret = appSecret.secret;
-        let [err, data] = await evaluate(this.dataMapper.put(dtoToSave));
+        let dtoToSave = new AppSecretDynamoDto().withServiceId(appSecret.serviceId).withSecret(appSecret.secret);
+        let [err, data] = await evaluate(this.dataMapper.put<AppSecretDynamoDto>(dtoToSave));
         if (err) {
             console.log("Error saving: " + err);
             throw new Error("Unable evaluate save the app secret for id=" + appSecret.serviceId);
         } else {
-            return appSecret;
+            return data.toModel();
         }
     }
 

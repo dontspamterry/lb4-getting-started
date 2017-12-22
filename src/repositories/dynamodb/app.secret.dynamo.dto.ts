@@ -14,6 +14,19 @@ export class AppSecretDynamoDto {
     @attribute()
     secret: string;
 
+    public withServiceId(serviceId: string): this {
+        this.serviceId = serviceId;
+        return this;
+    }
+
+    public withSecret(secret: string): this {
+        this.secret = secret;
+        return this;
+    }
+
+    public toModel(): AppSecret {
+        return new AppSecret().withServiceId(this.serviceId).withSecret(this.secret);
+    }
 
     public static mapToModel(attributeMap: AttributeMap): AppSecret | undefined {
         let appSecret: AppSecret | undefined = undefined;

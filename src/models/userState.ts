@@ -8,4 +8,14 @@ export class UserState extends Entity {
 
     @property({type: 'string', required: true})
     ntid: string;
+
+    public withToken(token: string): this {
+        this.token = token;
+        return this;
+    }
+
+    public withNtid(ntid: string): this {
+        this.ntid = ntid;
+        return this;
+    }
 }
